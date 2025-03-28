@@ -1,4 +1,4 @@
-// Generate Salami Function
+// Generate Salami Function (Updated with better error handling and storage)
 async function generateSalami() {
   const userName = document.getElementById('userName').value.trim();
   if (!userName) {
@@ -6,55 +6,62 @@ async function generateSalami() {
     return;
   }
 
-  // Get IP
-  let ip = 'অজানা';
   try {
-    const response = await fetch('https://api.ipify.org?format=json');
-    const data = await response.json();
-    ip = data.ip;
+    // Get IP
+    const ipResponse = await fetch('https://api.ipify.org?format=json');
+    const ipData = await ipResponse.json();
+    const ip = ipData.ip || 'অজানা';
+
+    // Generate random amount
+    const amounts = [10, 20, 50, 100, 200, 500, 1000];
+    const randomAmount = amounts[Math.floor(Math.random() * amounts.length)];
+
+    // Prepare and save data
+    const salamiData = {
+      name: userName,
+      ip: ip,
+      amount: randomAmount,
+      date: new Date().toLocaleString('bn-BD')
+    };
+
+    // Save to localStorage
+    localStorage.setItem('lastSalami', JSON.stringify(salamiData));
+    
+    // Update admin logs
+    const logs = JSON.parse(localStorage.getItem('salamiLogs') || []);
+    logs.push(salamiData);
+    localStorage.setItem('salamiLogs', JSON.stringify(logs));
+    
+    // Trigger storage event for admin dashboard
+    window.dispatchEvent(new Event('storage'));
+
+    // Display result
+    showResult(userName, randomAmount);
+    showMoneyImage(randomAmount);
+    startConfetti();
+    playSound();
+
   } catch (error) {
-    console.error('IP fetch error:', error);
+    console.error('Error in generateSalami:', error);
+    alert('সালামি জেনারেট করতে সমস্যা হয়েছে!');
   }
+}
 
-  // Generate random amount
-  const amounts = [10, 20, 50, 100, 200, 500, 1000];
-  const randomAmount = amounts[Math.floor(Math.random() * amounts.length)];
-
-  // Save data
-  const salamiData = {
-    name: userName,
-    ip: ip,
-    amount: randomAmount,
-    date: new Date().toLocaleString('bn-BD'),
-  };
-
-  localStorage.setItem('lastSalami', JSON.stringify(salamiData));
-  updateAdminLogs(salamiData);
-
-  // Display personalized result
+// Display result function
+function showResult(name, amount) {
   const resultElement = document.getElementById('result');
-  resultElement.innerHTML = `🎊 <span style="color: #27ae60;">${userName}</span>, আপনি পেলেন: <strong>${randomAmount}৳</strong>!`;
+  resultElement.innerHTML = `🎊 <span style="color: #27ae60;">${name}</span>, আপনি পেলেন: <strong>${amount}৳</strong>!`;
+}
 
-  // Show money image with pop animation
+// Show money image function
+function showMoneyImage(amount) {
   const moneyImg = document.getElementById('moneyImg');
-  moneyImg.src =
-    noteImages[randomAmount] ||
-    `https://via.placeholder.com/200x100?text=BDT+${randomAmount}৳`;
+  moneyImg.src = noteImages[amount] || `https://via.placeholder.com/200x100?text=BDT+${amount}৳`;
   moneyImg.style.display = 'block';
   moneyImg.classList.add('pop');
-
-  startConfetti(); // বাটনে ক্লিক করলেই কনফেটি শুরু হবে
-  playSound(); // বাটনে ক্লিক করলেই সাউন্ড প্লে হবে
 }
 
-// Update Admin Logs (Dashboard)
-function updateAdminLogs(data) {
-  let logs = JSON.parse(localStorage.getItem('salamiLogs') || '[]');
-  logs.push(data);
-  localStorage.setItem('salamiLogs', JSON.stringify(logs));
-}
-
-// কনফেটি এফেক্ট ফাংশন
+// Confetti effect (unchanged)
 function startConfetti() {
   const canvas = document.getElementById('confettiCanvas');
   const ctx = canvas.getContext('2d');
@@ -87,20 +94,19 @@ function startConfetti() {
 
   draw();
 
-  // ১২ সেকেন্ড পর কনফেটি বন্ধ হবে
   setTimeout(() => {
     cancelAnimationFrame(confettiAnimation);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
   }, 12000);
 }
 
-// সাউন্ড প্লে ফাংশন
+// Sound play function (unchanged)
 function playSound() {
-  let audio = new Audio('music/eid_music.mp3'); // Ensure correct path
-  audio.play();
+  let audio = new Audio('music/eid_music.mp3');
+  audio.play().catch(e => console.log('Audio play failed:', e));
 }
 
-// BDT note images
+// BDT note images (unchanged)
 const noteImages = {
   10: 'Img/10.jpg',
   20: 'Img/20.png',
@@ -108,10 +114,10 @@ const noteImages = {
   200: 'Img/200.png',
   100: 'Img/100.jpg',
   500: 'Img/500.jpg',
-  1000: 'Img/1000.png',
+  1000: 'Img/1000.png'
 };
 
-// Simple Typing Animation
+// Typing animation (unchanged)
 const messages = ['Raiyan..'];
 let msgIndex = 0;
 let charIndex = 0;
@@ -120,42 +126,23 @@ const element = document.getElementById('typing');
 
 function type() {
   const currentMsg = messages[msgIndex];
-
-  if (isDeleting) {
-    element.textContent = currentMsg.substring(0, charIndex - 1);
-    charIndex--;
-  } else {
-    element.textContent = currentMsg.substring(0, charIndex + 1);
-    charIndex++;
-  }
-
+  element.textContent = isDeleting 
+    ? currentMsg.substring(0, charIndex - 1)
+    : currentMsg.substring(0, charIndex + 1);
+  
+  isDeleting ? charIndex-- : charIndex++;
+  
   if (!isDeleting && charIndex === currentMsg.length) {
     isDeleting = true;
-    setTimeout(type, 1500); // Pause at end
+    setTimeout(type, 1500);
   } else if (isDeleting && charIndex === 0) {
     isDeleting = false;
     msgIndex = (msgIndex + 1) % messages.length;
-    setTimeout(type, 500); // Pause between messages
+    setTimeout(type, 500);
   } else {
-    setTimeout(type, isDeleting ? 50 : 100); // Typing speed
+    setTimeout(type, isDeleting ? 50 : 100);
   }
 }
 
-// Start animation after 1 second
+// Initialize
 setTimeout(type, 1000);
-
-async function saveLog(name, amount) {
-  const logData = {
-    name,
-    amount,
-    ip: await fetch('https://api.ipify.org?format=json')
-      .then(r => r.json())
-      .then(data => data.ip),
-    date: new Date().toISOString(),
-  };
-
-  await fetch('/.netlify/functions/salami', {
-    method: 'POST',
-    body: JSON.stringify(logData),
-  });
-}
