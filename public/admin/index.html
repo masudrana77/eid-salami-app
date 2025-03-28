@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard - ঈদ সালামি লগস</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+  <div class="admin-container">
+    <h1>📜 ঈদ সালামি লগস</h1>
+    <button onclick="clearLogs()">🗑️ সকল লগ মুছুন</button>
+    <table>
+      <thead>
+        <tr>
+          <th>নাম</th>
+          <th>IP</th>
+          <th>পরিমাণ (৳)</th>
+          <th>সময়</th>
+        </tr>
+      </thead>
+      <tbody id="logTableBody">
+        <!-- Logs dynamically inserted here -->
+      </tbody>
+    </table>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+
+</html>
