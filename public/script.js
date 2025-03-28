@@ -10,7 +10,7 @@ async function generateSalami() {
     // Get IP
     const ipResponse = await fetch('https://api.ipify.org?format=json');
     const ipData = await ipResponse.json();
-    const ip = ipData.ip || 'অজানা';
+    const ip = ipData.ip || 'অজানা'; 
 
     // Generate random amount
     const amounts = [10, 20, 50, 100, 200, 500, 1000];
