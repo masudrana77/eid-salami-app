@@ -1,148 +1,108 @@
-// Generate Salami Function (Updated with better error handling and storage)
-async function generateSalami() {
-  const userName = document.getElementById('userName').value.trim();
-  if (!userName) {
-    alert('দয়া করে আপনার নাম লিখুন!');
-    return;
-  }
-
+// Updated loadLogs function with better error handling and UI feedback
+async function loadLogs() {
+  const tableBody = document.getElementById('logTableBody');
+  
   try {
-    // Get IP
-    const ipResponse = await fetch('https://api.ipify.org?format=json');
-    const ipData = await ipResponse.json();
-    const ip = ipData.ip || 'অজানা';
-
-    // Generate random amount
-    const amounts = [10, 20, 50, 100, 200, 500, 1000];
-    const randomAmount = amounts[Math.floor(Math.random() * amounts.length)];
-
-    // Prepare and save data
-    const salamiData = {
-      name: userName,
-      ip: ip,
-      amount: randomAmount,
-      date: new Date().toLocaleString('bn-BD')
-    };
-
-    // Save to localStorage
-    localStorage.setItem('lastSalami', JSON.stringify(salamiData));
+    // Show loading state
+    tableBody.innerHTML = '<tr><td colspan="4">লগ ডাটা লোড হচ্ছে...</td></tr>';
     
-    // Update admin logs
-    const logs = JSON.parse(localStorage.getItem('salamiLogs') || []);
-    logs.push(salamiData);
-    localStorage.setItem('salamiLogs', JSON.stringify(logs));
+    const response = await fetch('/.netlify/functions/getLogs');
     
-    // Trigger storage event for admin dashboard
-    window.dispatchEvent(new Event('storage'));
-
-    // Display result
-    showResult(userName, randomAmount);
-    showMoneyImage(randomAmount);
-    startConfetti();
-    playSound();
-
+    if (!response.ok) {
+      throw new Error(`Network response was not ok (${response.status})`);
+    }
+    
+    const result = await response.json();
+    
+    // Handle both FaunaDB and direct array responses
+    const logs = Array.isArray(result) ? result : 
+                (result.data ? result.data.map(item => item.data) : []);
+    
+    if (logs.length === 0) {
+      tableBody.innerHTML = '<tr><td colspan="4">কোনো লগ নেই</td></tr>';
+      return;
+    }
+    
+    tableBody.innerHTML = logs.map(log => `
+      <tr>
+        <td>${log.name || 'N/A'}</td>
+        <td>${log.ip || 'N/A'}</td>
+        <td>${log.amount ? log.amount + '৳' : 'N/A'}</td>
+        <td>${log.date || 'N/A'}</td>
+      </tr>`
+    ).join('');
+    
   } catch (error) {
-    console.error('Error in generateSalami:', error);
-    alert('সালামি জেনারেট করতে সমস্যা হয়েছে!');
+    console.error('Error loading logs:', error);
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="4" class="error">
+          লগ ডাটা লোড করতে সমস্যা হয়েছে। পরে আবার চেষ্টা করুন।
+        </td>
+      </tr>`;
   }
 }
 
-// Display result function
-function showResult(name, amount) {
-  const resultElement = document.getElementById('result');
-  resultElement.innerHTML = `🎊 <span style="color: #27ae60;">${name}</span>, আপনি পেলেন: <strong>${amount}৳</strong>!`;
-}
-
-// Show money image function
-function showMoneyImage(amount) {
-  const moneyImg = document.getElementById('moneyImg');
-  moneyImg.src = noteImages[amount] || `https://via.placeholder.com/200x100?text=BDT+${amount}৳`;
-  moneyImg.style.display = 'block';
-  moneyImg.classList.add('pop');
-}
-
-// Confetti effect (unchanged)
-function startConfetti() {
-  const canvas = document.getElementById('confettiCanvas');
-  const ctx = canvas.getContext('2d');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-
-  const particles = [];
-  for (let i = 0; i < 100; i++) {
-    particles.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 6 + 2,
-      d: Math.random() * 2 + 2,
-      color: `hsl(${Math.random() * 360}, 100%, 50%)`,
-    });
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach(p => {
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, false);
-      ctx.fillStyle = p.color;
-      ctx.fill();
-      p.y += p.d;
-      if (p.y > canvas.height) p.y = 0;
-    });
-    confettiAnimation = requestAnimationFrame(draw);
-  }
-
-  draw();
-
-  setTimeout(() => {
-    cancelAnimationFrame(confettiAnimation);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  }, 12000);
-}
-
-// Sound play function (unchanged)
-function playSound() {
-  let audio = new Audio('music/eid_music.mp3');
-  audio.play().catch(e => console.log('Audio play failed:', e));
-}
-
-// BDT note images (unchanged)
-const noteImages = {
-  10: 'Img/10.jpg',
-  20: 'Img/20.png',
-  50: 'Img/50.jpg',
-  200: 'Img/200.png',
-  100: 'Img/100.jpg',
-  500: 'Img/500.jpg',
-  1000: 'Img/1000.png'
-};
-
-// Typing animation (unchanged)
-const messages = ['Raiyan..'];
-let msgIndex = 0;
-let charIndex = 0;
-let isDeleting = false;
-const element = document.getElementById('typing');
-
-function type() {
-  const currentMsg = messages[msgIndex];
-  element.textContent = isDeleting 
-    ? currentMsg.substring(0, charIndex - 1)
-    : currentMsg.substring(0, charIndex + 1);
+// Updated saveLog function with retry mechanism
+async function saveLog(data) {
+  const maxRetries = 2;
+  let retryCount = 0;
   
-  isDeleting ? charIndex-- : charIndex++;
-  
-  if (!isDeleting && charIndex === currentMsg.length) {
-    isDeleting = true;
-    setTimeout(type, 1500);
-  } else if (isDeleting && charIndex === 0) {
-    isDeleting = false;
-    msgIndex = (msgIndex + 1) % messages.length;
-    setTimeout(type, 500);
-  } else {
-    setTimeout(type, isDeleting ? 50 : 100);
+  while (retryCount < maxRetries) {
+    try {
+      const response = await fetch('/.netlify/functions/saveLog', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+      
+    } catch (error) {
+      retryCount++;
+      console.error(`Attempt ${retryCount} failed:`, error);
+      
+      if (retryCount === maxRetries) {
+        // Fallback to localStorage if server save fails
+        console.warn('Falling back to localStorage');
+        const logs = JSON.parse(localStorage.getItem('salamiLogs') || []);
+        logs.push(data);
+        localStorage.setItem('salamiLogs', JSON.stringify(logs));
+        return { status: 'local_storage_fallback' };
+      }
+      
+      // Wait before retrying
+      await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+    }
   }
 }
 
-// Initialize
-setTimeout(type, 1000);
+// Updated generateSalami integration
+async function generateSalami() {
+  // ... [previous code until salamiData creation]
+  
+  const salamiData = {
+    name: userName,
+    ip: ip,
+    amount: randomAmount,
+    date: new Date().toLocaleString('bn-BD')
+  };
+
+  // Save to both systems
+  localStorage.setItem('lastSalami', JSON.stringify(salamiData));
+  await saveLog(salamiData);
+  
+  // ... [rest of your existing code]
+}
+
+// Add this to your CSS
+.error {
+  color: #e74c3c;
+  font-weight: bold;
+}
