@@ -20,4 +20,3 @@ exports.handler = async event => {
     return { statusCode: 400, body: JSON.stringify(error) };
   }
 };
-const faunadb = require('https://cdn.jsdelivr.net/npm/faunadb@4.6.0/dist/faunadb.js');
