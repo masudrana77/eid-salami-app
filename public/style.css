@@ -6,24 +6,32 @@ body {
   padding: 20px;
   min-height: 100vh;
   overflow-x: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .container {
   max-width: 500px;
-  margin: 0 auto;
+  width: 90%;
   background: white;
   padding: 30px;
   border-radius: 15px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   position: relative;
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 h1 {
   color: #e67e22;
   margin-bottom: 10px;
+  font-size: 24px;
+  text-align: center;
 }
 input {
   padding: 12px;
-  width: 80%;
+  width: 100%;
   margin: 10px 0;
   border: 2px solid #ddd;
   border-radius: 5px;
@@ -40,6 +48,7 @@ button {
   margin: 20px 0;
   transition: all 0.3s;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 100%;
 }
 button:hover {
   background-color: #2ecc71;
@@ -53,7 +62,8 @@ button:hover {
   color: #e74c3c;
 }
 .money-img {
-  width: 200px;
+  width: 60%;
+  max-width: 200px;
   margin: 20px auto;
   display: block;
   transition: all 0.5s;
@@ -92,27 +102,6 @@ button:hover {
     opacity: 0;
   }
 }
-.confettiCanvas {
-  position: fixed;
-  width: 10px;
-  height: 10px;
-  background-color: #f39c12;
-  opacity: 0;
-  top: 0;
-  animation: confetti 3s ease-out forwards;
-}
-@keyframes confettiCanvas {
-  0% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(100vh) rotate(720deg);
-    opacity: 0;
-  }
-}
-
-/* কনফেটি ক্যানভাস */
 #confettiCanvas {
   position: fixed;
   top: 0;
@@ -121,56 +110,30 @@ button:hover {
   height: 100%;
   pointer-events: none;
 }
-
-/* ====== মোবাইল রেস্পনসিভ ====== */
+/* মোবাইল রেস্পনসিভ */
 @media (max-width: 600px) {
   .container {
-    width: 90%;
     padding: 20px;
   }
-
   h1 {
     font-size: 22px;
   }
-
   input {
     font-size: 14px;
     padding: 10px;
-    width: 90%;
   }
-
   button {
     font-size: 16px;
     padding: 12px;
-    width: 100%;
   }
-
   #result {
     font-size: 20px;
   }
-
   .money-img {
-    width: 150px;
+    width: 120px;
   }
 }
-
-/* Facebook Icon Container */
-/* Main Container - Centers everything */
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  text-align: center;
-}
-
-/* Your existing content styles would go here */
-.content {
-  margin-bottom: 40px;
-}
-
-/* Facebook Animation - Now centered below content */
+/* Facebook Icon Animation */
 .fb-animation {
   display: flex;
   align-items: center;
@@ -179,25 +142,20 @@ button:hover {
   border-radius: 50px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
+  width: fit-content;
 }
-
-/* Facebook Icon */
 .fb-icon {
   width: 25px;
   height: 25px;
-  background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzE4NzdGMiIgZD0iTTIyIDEyYzAgNS41MjMtNC40NzcgMTAtMTAgMTBTMiAxNy41MjMgMiAxMiA2LjQ3NyAyIDEyIDJzMTAgNC40NzcgMTAgMTB6bS0xMS4yMTYtNVY5SDl2M2gyLjI5N3Y3aDIuNzE2di03SDIxVjloLTMuOTg3VjcuMzk3QzE3IDYuNTAyIDE3Ljg5NSA2IDE4Ljg5NSA2SDIxVjNoLTQuMTA0QzE0Ljg4IDMgMTQgNS45NzYgMTQgNi43NjlWOUgxMnoiLz48L3N2Zz4=')
-    no-repeat center;
+  background: url('data:image/svg+xml;base64,...') no-repeat center;
   margin-right: 10px;
 }
-
-/* Typing Animation */
 .typing-text {
   font-family: Arial;
   color: #1877f2;
   font-weight: bold;
   height: 20px;
 }
-
 .cursor {
   display: inline-block;
   width: 2px;
@@ -205,13 +163,7 @@ button:hover {
   background: #1877f2;
   animation: blink 0.8s infinite;
 }
-
 @keyframes blink {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
