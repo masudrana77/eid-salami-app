@@ -1,21 +1,27 @@
-async function loadLogs() {
-  try {
-    const response = await fetch('/.netlify/functions/getLogs');
-    const result = await response.json();
-    const logs = result.map(item => item.data);
-    
-    const tableBody = document.getElementById('logTableBody');
-    tableBody.innerHTML = logs.length
-      ? logs.map(log => `
-          <tr>
+document.addEventListener('DOMContentLoaded', loadLogs);
+
+function loadLogs() {
+  const logs = JSON.parse(localStorage.getItem('salamiLogs') || '[]');
+  const tableBody = document.getElementById('logTableBody');
+
+  tableBody.innerHTML = logs.length
+    ? logs
+        .map(
+          log => `
+        <tr>
             <td>${log.name}</td>
             <td>${log.ip}</td>
             <td>${log.amount}৳</td>
             <td>${log.date}</td>
-          </tr>`
-        ).join('')
-      : "<tr><td colspan='4'>কোনো লগ নেই</td></tr>";
-  } catch (error) {
-    console.error('Error loading logs:', error);
+        </tr>`
+        )
+        .join('')
+    : "<tr><td colspan='4'>কোনও লগ নেই</td></tr>";
+}
+
+function clearLogs() {
+  if (confirm('আপনি কি নিশ্চিত সকল লগ মুছে ফেলতে চান?')) {
+    localStorage.removeItem('salamiLogs');
+    loadLogs();
   }
 }
