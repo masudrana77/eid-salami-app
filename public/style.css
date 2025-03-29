@@ -147,7 +147,8 @@ button:hover {
 .fb-icon {
   width: 25px;
   height: 25px;
-  background: url('data:image/svg+xml;base64,...') no-repeat center;
+  background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzE4NzdGMiIgZD0iTTIyIDEyYzAgNS41MjMtNC40NzcgMTAtMTAgMTBTMiAxNy41MjMgMiAxMiA2LjQ3NyAyIDEyIDJzMTAgNC40NzcgMTAgMTB6bS0xMS4yMTYtNVY5SDl2M2gyLjI5N3Y3aDIuNzE2di03SDIxVjloLTMuOTg3VjcuMzk3QzE3IDYuNTAyIDE3Ljg5NSA2IDE4Ljg5NSA2SDIxVjNoLTQuMTA0QzE0Ljg4IDMgMTQgNS45NzYgMTQgNi43NjlWOUgxMnoiLz48L3N2Zz4=')
+    no-repeat center;
   margin-right: 10px;
 }
 .typing-text {
