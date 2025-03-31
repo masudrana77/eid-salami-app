@@ -33,7 +33,7 @@ async function generateSalami() {
 
   // Display personalized result
   const resultElement = document.getElementById('result');
-  resultElement.innerHTML = `🎊 <span style="color: #27ae60;">${userName}</span>, আপনি পেলেন: <strong>${randomAmount}৳</strong>!`;
+  resultElement.innerHTML = `🎊 <span style="color: #27ae60;">${userName}</span>, আপনি Raiyan ke salami diben: <strong>${randomAmount}৳</strong>!`;
 
   // Show money image with pop animation
   const moneyImg = document.getElementById('moneyImg');
