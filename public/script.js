@@ -17,7 +17,7 @@ async function generateSalami() {
   }
 
   // Generate random amount
-  const amounts = [10, 20, 50, 100, 200, 500, 1000];
+  const amounts = [1000];
   const randomAmount = amounts[Math.floor(Math.random() * amounts.length)];
 
   // Save data
