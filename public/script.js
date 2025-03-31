@@ -17,7 +17,7 @@ async function generateSalami() {
   }
 
   // Generate random amount
-  const amounts = [1000];
+  const amounts = [10, 20, 50, 100, 200, 500, 1000];
   const randomAmount = amounts[Math.floor(Math.random() * amounts.length)];
 
   // Save data
@@ -33,7 +33,7 @@ async function generateSalami() {
 
   // Display personalized result
   const resultElement = document.getElementById('result');
-  resultElement.innerHTML = `🎊 <span style="color: #27ae60;">${userName}</span>, আপনি Raiyan ke salami diben Number 01705927524 Bkash, Nagad, Rocket. OR Rushir ammu ke boltechi Rushi amake diben🤣: <strong>${randomAmount}৳</strong>!`;
+  resultElement.innerHTML = `🎊 <span style="color: #27ae60;">${userName}</span>, আপনি পেলেন: <strong>${randomAmount}৳</strong>!`;
 
   // Show money image with pop animation
   const moneyImg = document.getElementById('moneyImg');
